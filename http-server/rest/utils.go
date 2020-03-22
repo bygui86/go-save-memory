@@ -1,6 +1,19 @@
 package rest
 
-import "github.com/bygui86/go-save-memory/http-server/logging"
+import (
+	"net/http"
+
+	"github.com/bygui86/go-save-memory/http-server/logging"
+)
+
+const (
+	contentTypeHeaderKey   = "Content-Type"
+	contentTypeHeaderValue = "application/json"
+)
+
+func setJsonContentType(writer http.ResponseWriter) {
+	writer.Header().Set(contentTypeHeaderKey, contentTypeHeaderValue)
+}
 
 // buildEmptyUser - Build an User with default values
 func buildEmptyUser() *User {

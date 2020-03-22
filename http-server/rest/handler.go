@@ -11,7 +11,7 @@ import (
 func (s *Server) getUser(writer http.ResponseWriter, request *http.Request) {
 	logging.Log.Info("GET user request")
 
-	writer.Header().Set("Content-Type", "application/json")
+	setJsonContentType(writer)
 	err := json.NewEncoder(writer).Encode(s.user)
 	if err != nil {
 		logging.SugaredLog.Errorf("Error on GET user request: %s", err.Error())
@@ -31,7 +31,7 @@ func (s *Server) postUser(writer http.ResponseWriter, request *http.Request) {
 		responseMsg = "Set new user successful"
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
+	setJsonContentType(writer)
 	encErr := json.NewEncoder(writer).Encode(&Result{Message: responseMsg})
 	if encErr != nil {
 		logging.SugaredLog.Errorf("Error on POST user request response encoding: %s", encErr.Error())
@@ -53,7 +53,7 @@ func (s *Server) putUser(writer http.ResponseWriter, request *http.Request) {
 		responseMsg = "Update user successful"
 	}
 
-	writer.Header().Set("Content-Type", "application/json")
+	setJsonContentType(writer)
 	encErr := json.NewEncoder(writer).Encode(&Result{Message: responseMsg})
 	if encErr != nil {
 		logging.SugaredLog.Errorf("Error on PUT user request response encoding: %s", encErr.Error())
@@ -67,7 +67,7 @@ func (s *Server) deleteUser(writer http.ResponseWriter, request *http.Request) {
 
 	s.user = buildEmptyUser()
 
-	writer.Header().Set("Content-Type", "application/json")
+	setJsonContentType(writer)
 	encErr := json.NewEncoder(writer).Encode(
 		&Result{Message: "Delete user successful"},
 	)
