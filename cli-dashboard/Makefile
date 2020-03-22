@@ -10,25 +10,13 @@
 
 # ACTIONS
 
-## http-server
+build :		## Build CLI dashboard
+	export GO111MODULE=on && \
+	go build .
 
-build-http-server :		## Build HTTP server
-	cd ./http-server && \
-	make build
-
-run-http-server :		## Run HTTP server
-	cd ./http-server && \
-	make run
-
-## cli-dashboard
-
-build-cli-dashboard :		## Build CLI dashboard
-	cd ./cli-dashboard && \
-	make build
-
-run-cli-dashboard :		## Run CLI dashboard
-	cd ./cli-dashboard && \
-	make run
+run :		## Run CLI dashboard
+	export GO111MODULE=on && \
+	go run main.go -url http://localhost:6060/debug/vars
 
 ## helpers
 

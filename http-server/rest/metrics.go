@@ -5,18 +5,51 @@ import (
 )
 
 var (
-	opsProcessed = prometheus.NewCounter(
+	getRequests = prometheus.NewCounter(
 		prometheus.CounterOpts{
-			Name: "total_processed_ops",
-			Help: "Total number of processed operations",
+			Name: "get_requests_total",
+			Help: "Total number of GET requests",
+		},
+	)
+	postRequests = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "post_requests_total",
+			Help: "Total number of POST requests",
+		},
+	)
+	putRequests = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "put_requests_total",
+			Help: "Total number of PUT requests",
+		},
+	)
+	deleteRequests = prometheus.NewCounter(
+		prometheus.CounterOpts{
+			Name: "delete_requests_total",
+			Help: "Total number of DELETE requests",
 		},
 	)
 )
 
 func RegisterCustomMetrics() {
-	prometheus.MustRegister(opsProcessed)
+	prometheus.MustRegister(getRequests)
+	prometheus.MustRegister(postRequests)
+	prometheus.MustRegister(putRequests)
+	prometheus.MustRegister(deleteRequests)
 }
 
-func IncreaseOpsProcessed() {
-	go opsProcessed.Inc()
+func IncreaseGetRequests() {
+	go getRequests.Inc()
+}
+
+func IncreasePostRequests() {
+	go postRequests.Inc()
+}
+
+func IncreasePutRequests() {
+	go putRequests.Inc()
+}
+
+func IncreaseDeleteRequests() {
+	go deleteRequests.Inc()
 }

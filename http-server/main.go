@@ -49,7 +49,7 @@ func main() {
 }
 
 func startMonitor() *monitoring.Server {
-	logging.Log.Info("Start Monitoring server")
+	logging.Log.Debug("Start Monitoring server")
 
 	server := monitoring.NewMonitorServer()
 	logging.Log.Debug("Monitoring server successfully created")
@@ -61,13 +61,13 @@ func startMonitor() *monitoring.Server {
 }
 
 func startRestServer() *rest.Server {
-	logging.Log.Info("Start REST server")
+	logging.Log.Debug("Start REST server")
 
 	server := rest.NewRestServer()
-	logging.Log.Debug("HTTP server successfully created")
+	logging.Log.Debug("REST server successfully created")
 
 	server.Start()
-	logging.Log.Debug("HTTP server successfully started")
+	logging.Log.Debug("REST server successfully started")
 
 	return server
 }
@@ -77,19 +77,24 @@ func startGopsAgent() {
 
 	err := agent.Listen(agent.Options{})
 	if err != nil {
-		logging.Log.Error("GoPS agent start failed:", err.Error())
-		os.Exit(404)
+		logging.SugaredLog.Errorf("GoPS agent start failed: %s", err.Error())
+		os.Exit(500)
 	}
+
+	logging.Log.Info("GoPS agent ready")
 }
 
 func startDebugServer() {
 	logging.Log.Info("Start DEBUG server")
+
 	go func() {
 		err := http.ListenAndServe(":6060", nil)
 		if err != nil {
-			logging.Log.Error("Error starting REST server:", err)
+			logging.SugaredLog.Errorf("Error starting REST server: %s", err.Error())
 		}
 	}()
+
+	logging.Log.Info("DEBUG server listening on port 6060")
 }
 
 func startSysCallChannel() {
@@ -99,7 +104,7 @@ func startSysCallChannel() {
 }
 
 func shutdownAndWait(cfg *config.Config, monitorServer *monitoring.Server, restServer *rest.Server) {
-	logging.Log.Warn("Termination signal received! Timeout", cfg.ShutdownTimeout)
+	logging.SugaredLog.Warnf("Termination signal received! Timeout %d", cfg.ShutdownTimeout)
 	monitorServer.Shutdown(cfg.ShutdownTimeout)
 	restServer.Shutdown(cfg.ShutdownTimeout)
 	time.Sleep(time.Duration(cfg.ShutdownTimeout+1) * time.Second)

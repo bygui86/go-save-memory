@@ -6,22 +6,22 @@ import (
 )
 
 const (
-	monHostEnvVar = "MONITOR_HOST"
-	monPortEnvVar = "MONITOR_PORT"
+	monitorHostEnvVar = "MONITOR_HOST"
+	monitorPortEnvVar = "MONITOR_PORT"
 
-	monHostDefault = "localhost"
-	monPortDefault = 9090
+	monitorHostDefault = "localhost"
+	monitorPortDefault = 9090
 )
 
 type Config struct {
-	RestHost string
-	RestPort int
+	MonitorHost string
+	MonitorPort int
 }
 
 func loadConfig() *Config {
 	logging.Log.Debug("Load Monitoring configurations")
 	return &Config{
-		RestHost: utils.GetStringEnv(monHostEnvVar, monHostDefault),
-		RestPort: utils.GetIntEnv(monPortEnvVar, monPortDefault),
+		MonitorHost: utils.GetStringEnv(monitorHostEnvVar, monitorHostDefault),
+		MonitorPort: utils.GetIntEnv(monitorPortEnvVar, monitorPortDefault),
 	}
 }

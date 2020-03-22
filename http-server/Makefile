@@ -10,25 +10,13 @@
 
 # ACTIONS
 
-## http-server
+build :		## Build HTTP server
+	export GO111MODULE=on && \
+	go build .
 
-build-http-server :		## Build HTTP server
-	cd ./http-server && \
-	make build
-
-run-http-server :		## Run HTTP server
-	cd ./http-server && \
-	make run
-
-## cli-dashboard
-
-build-cli-dashboard :		## Build CLI dashboard
-	cd ./cli-dashboard && \
-	make build
-
-run-cli-dashboard :		## Run CLI dashboard
-	cd ./cli-dashboard && \
-	make run
+run :		## Run HTTP server
+	export GO111MODULE=on && \
+	godotenv -f local.env go run main.go
 
 ## helpers
 

@@ -16,6 +16,7 @@ const (
 )
 
 var Log *zap.Logger
+var SugaredLog *zap.SugaredLogger
 
 func init() {
 	encoding := utils.GetStringEnv(logEncodingEnvVar, logEncodingDefault)
@@ -36,6 +37,7 @@ func buildLogger(encoding string, level zapcore.Level) {
 		ErrorOutputPaths: []string{"stderr"},
 		EncoderConfig:    buildEncoderConfig(level),
 	}.Build()
+	SugaredLog = Log.Sugar()
 }
 
 func buildEncoderConfig(level zapcore.Level) zapcore.EncoderConfig {

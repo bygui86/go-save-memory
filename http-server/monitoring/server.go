@@ -2,8 +2,8 @@ package monitoring
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -13,74 +13,71 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Server struct {
-	Config     *Config
-	Router     *mux.Router
-	HTTPServer *http.Server
-	Running    bool
-}
-
 // NewMonitorServer - Create new Monitoring server
 func NewMonitorServer() *Server {
-	logging.Log.Info("Create new Monitoring server")
+	logging.Log.Debug("Create new Monitoring server")
 
-	// create config
 	cfg := loadConfig()
 
-	// create router
-	router := newRouter()
-
-	// create http server
-	httpServer := newHTTPServer(cfg.RestHost, cfg.RestPort, router)
-
-	return &Server{
-		Config:     cfg,
-		Router:     router,
-		HTTPServer: httpServer,
+	server := &Server{
+		Config: cfg,
 	}
+
+	server.setupRouter()
+	server.setupHTTPServer()
+	return server
 }
 
-// newRouter - Create new Gorilla mux Router
-func newRouter() *mux.Router {
+// setupRouter - Create new Gorilla mux Router
+func (s *Server) setupRouter() {
 	logging.Log.Debug("Create new Router")
 
-	router := mux.NewRouter().StrictSlash(true)
-	router.Handle("/metrics", promhttp.Handler())
-	return router
+	s.Router = mux.NewRouter().StrictSlash(true)
+	s.Router.Handle("/metrics", promhttp.Handler())
 }
 
 // newHTTPServer - Create new HTTP server
-func newHTTPServer(host string, port int, router *mux.Router) *http.Server {
-	logging.Log.Debug("Create new HTTP server on port", port)
+func (s *Server) setupHTTPServer() {
+	logging.SugaredLog.Debugf("Create new HTTP server on port %d", s.Config.MonitorPort)
 
-	return &http.Server{
-		Addr:    host + ":" + strconv.Itoa(port),
-		Handler: router,
-		// Good practice to set timeouts to avoid Slowloris attacks.
-		WriteTimeout: time.Second * 15,
-		ReadTimeout:  time.Second * 15,
-		IdleTimeout:  time.Second * 60,
+	if s.Config != nil {
+		s.HTTPServer = &http.Server{
+			Addr:    fmt.Sprintf("%s:%d", s.Config.MonitorHost, s.Config.MonitorPort),
+			Handler: s.Router,
+			// Good practice to set timeouts to avoid Slowloris attacks.
+			WriteTimeout: time.Second * 15,
+			ReadTimeout:  time.Second * 15,
+			IdleTimeout:  time.Second * 60,
+		}
+		return
 	}
+
+	logging.Log.Error("Monitoring server creation failed: Monitoring server configurations not initialized")
 }
 
 // Start - Start Monitoring server
 func (s *Server) Start() {
-	logging.Log.Info("Start Monitoring server...")
+	logging.Log.Info("Start Monitoring server")
 
-	go func() {
-		err := s.HTTPServer.ListenAndServe()
-		if err != nil {
-			logging.Log.Error("Error starting Monitoring server:", err)
-		}
-	}()
+	if s.HTTPServer != nil && !s.Running {
+		go func() {
+			err := s.HTTPServer.ListenAndServe()
+			if err != nil {
+				logging.SugaredLog.Errorf("Error starting Monitoring server: %s", err.Error())
+			}
+		}()
+		s.Running = true
+		logging.SugaredLog.Infof("Monitoring server listening on port %d", s.Config.MonitorPort)
+		return
+	}
 
-	s.Running = true
-	logging.Log.Info("Monitoring server listening on port", s.Config.RestPort)
+	logging.Log.Error("Monitoring server start failed: HTTP server not initialized or Monitoring server already running")
 }
 
 // Shutdown - Shutdown Monitoring server
 func (s *Server) Shutdown(timeout int) {
-	logging.Log.Warn("Shutdown Monitoring server, timeout", timeout)
+	logging.SugaredLog.Warnf("Shutdown Monitoring server, timeout %d", timeout)
+
 	if s.HTTPServer != nil && s.Running {
 		// create a deadline to wait for.
 		ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
@@ -88,8 +85,11 @@ func (s *Server) Shutdown(timeout int) {
 		// does not block if no connections, otherwise wait until the timeout deadline
 		err := s.HTTPServer.Shutdown(ctx)
 		if err != nil {
-			logging.Log.Error("Error shutting down Monitoring server:", err)
+			logging.SugaredLog.Errorf("Error shutting down Monitoring server: %s", err)
 		}
 		s.Running = false
+		return
 	}
+
+	logging.Log.Error("Monitoring server shutdown failed: HTTP server not initialized or Monitoring server not running")
 }
