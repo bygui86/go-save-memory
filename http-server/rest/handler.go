@@ -32,6 +32,7 @@ func (s *Server) postUser(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	setJsonContentType(writer)
+	setStatusAccepted(writer)
 	encErr := json.NewEncoder(writer).Encode(&Result{Message: responseMsg})
 	if encErr != nil {
 		logging.SugaredLog.Errorf("Error on POST user request response encoding: %s", encErr.Error())
@@ -54,6 +55,7 @@ func (s *Server) putUser(writer http.ResponseWriter, request *http.Request) {
 	}
 
 	setJsonContentType(writer)
+	setStatusAccepted(writer)
 	encErr := json.NewEncoder(writer).Encode(&Result{Message: responseMsg})
 	if encErr != nil {
 		logging.SugaredLog.Errorf("Error on PUT user request response encoding: %s", encErr.Error())
@@ -68,6 +70,7 @@ func (s *Server) deleteUser(writer http.ResponseWriter, request *http.Request) {
 	s.user = buildEmptyUser()
 
 	setJsonContentType(writer)
+	setStatusAccepted(writer)
 	encErr := json.NewEncoder(writer).Encode(
 		&Result{Message: "Delete user successful"},
 	)

@@ -11,8 +11,14 @@ const (
 	contentTypeHeaderValue = "application/json"
 )
 
+// setJsonContentType - Set response header "Content-Type" to "application/json"
 func setJsonContentType(writer http.ResponseWriter) {
 	writer.Header().Set(contentTypeHeaderKey, contentTypeHeaderValue)
+}
+
+// setStatusAccepted - Set response status code to 202-Accepted
+func setStatusAccepted(writer http.ResponseWriter) {
+	writer.WriteHeader(http.StatusAccepted)
 }
 
 // buildEmptyUser - Build an User with default values

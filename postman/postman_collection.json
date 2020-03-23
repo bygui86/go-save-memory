@@ -7,9 +7,31 @@
 	"item": [
 		{
 			"name": "Get user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "91f2f431-d342-414a-8262-0a5a72ad7451",
+						"exec": [
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
-				"header": [],
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "http://localhost:8080/user",
 					"protocol": "http",
@@ -26,6 +48,22 @@
 		},
 		{
 			"name": "Post user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b40aa091-cbc9-4382-b351-8d9c423d939c",
+						"exec": [
+							"",
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -60,6 +98,22 @@
 		},
 		{
 			"name": "Put user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "eb4d8415-1009-4618-9dcf-3a195d1ea275",
+						"exec": [
+							"",
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "PUT",
 				"header": [
@@ -94,9 +148,31 @@
 		},
 		{
 			"name": "Delete user",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "05f42f2a-455f-479e-8087-434ff851b261",
+						"exec": [
+							"",
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.response.to.have.status(202);",
+							"});",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
-				"header": [],
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"url": {
 					"raw": "http://localhost:8080/user",
 					"protocol": "http",
